@@ -1,2 +1,2 @@
-# yii2-lazy-pjax
-Yii2 Lazy Pjax extension
+# yii2-lazyload
+Yii2 Lazyload extensions

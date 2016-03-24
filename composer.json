@@ -1,13 +1,13 @@
 {
-    "name": "dlds/yii2-lazy-pjax",
-    "description": "Yii2 Lazy Pjax extension",
-    "keywords": ["yii2", "lazy load", "pjax"],
+    "name": "dlds/yii2-lazyload",
+    "description": "Yii2 Lazy Load extensions",
+    "keywords": ["yii2", "lazyload"],
     "type": "yii2-extension",
     "license": "BSD",
     "support": {
-        "issues": "https://github.com/dlds/yii2-lazy-pjax/issues",
-        "wiki": "https://github.com/dlds/yii2-lazy-pjax/wiki",
-        "source": "https://github.com/dlds/yii2-lazy-pjax"
+        "issues": "https://github.com/dlds/yii2-lazyload/issues",
+        "wiki": "https://github.com/dlds/yii2-lazyload/wiki",
+        "source": "https://github.com/dlds/yii2-lazyload"
     },
     "authors": [
         {
@@ -27,7 +27,7 @@
     },
     "autoload": {
         "psr-4": {
-            "dlds\\lazy-pjax\\": "src"
+            "dlds\\lazyload\\": "src"
         }
     }
 }
