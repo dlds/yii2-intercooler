@@ -26,6 +26,9 @@
         "codeception/specify": "*",
         "codeception/verify": "*"
     },
+    "dependencies": {
+        "intercooler-js": "0.9.4"
+    },
     "autoload": {
         "psr-4": {
             "dlds\\intercooler\\": "src"
