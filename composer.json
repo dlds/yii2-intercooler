@@ -1,13 +1,13 @@
 {
-    "name": "dlds/yii2-lazyload",
-    "description": "Yii2 Lazy Load extensions",
-    "keywords": ["yii2", "lazyload"],
+    "name": "dlds/yii2-intercooler",
+    "description": "Yii2 Intercooler extensions",
+    "keywords": ["yii2", "intercooler"],
     "type": "yii2-extension",
     "license": "BSD",
     "support": {
-        "issues": "https://github.com/dlds/yii2-lazyload/issues",
-        "wiki": "https://github.com/dlds/yii2-lazyload/wiki",
-        "source": "https://github.com/dlds/yii2-lazyload"
+        "issues": "https://github.com/dlds/yii2-intercooler/issues",
+        "wiki": "https://github.com/dlds/yii2-intercooler/wiki",
+        "source": "https://github.com/dlds/yii2-intercooler"
     },
     "authors": [
         {
@@ -16,7 +16,8 @@
         }
     ],
     "require": {
-        "yiisoft/yii2": "~2.0.0"
+        "yiisoft/yii2": "~2.0.0",
+        "bower-asset/intercooler-js": "~0.9.4"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",
@@ -27,7 +28,7 @@
     },
     "autoload": {
         "psr-4": {
-            "dlds\\lazyload\\": "src"
+            "dlds\\intercooler\\": "src"
         }
     }
 }

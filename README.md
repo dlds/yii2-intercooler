@@ -1,2 +1,2 @@
-# yii2-lazyload
-Yii2 Lazyload extensions
+# yii2-intercooler
+Yii2 Intercooler extensions
