@@ -7,19 +7,63 @@
 
 namespace dlds\intercooler\widgets;
 
+use yii\helpers\Html;
+use yii\helpers\ArrayHelper;
+use dlds\intercooler\Intercooler;
+
 /**
- * This is the main class of the Button widget
+ * This is the main class of the Clickable widget
  *
  * @author Jiri Svoboda <jiri.svobodao@dlds.cz>
  * @package lazyload
  */
-class Clickable extends \dlds\intercooler\Intercooler {
+class Clickable extends \yii\base\Widget {
+
+    /**
+     * @var string wrapper tag
+     */
+    public $wrapper = 'div';
+
+    /**
+     * @var array additional wrapper options
+     */
+    public $options = [];
+
+    /**
+     * @var array additional wrapper options
+     */
+    public $intercooler = [];
+
+    /**
+     * @var Intercooler instance
+     */
+    protected $_handler;
 
     /**
      * @inheritdoc
      */
     public function init()
     {
-        return parent::init();
+        $this->_handler = new Intercooler($this->intercooler);
+
+        echo Html::beginTag($this->wrapper, $this->initOptions());
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function run()
+    {
+        echo Html::endTag($this->wrapper);
+    }
+
+    /**
+     * Initalizes and retrieves all required options for intercooler and user defined options
+     */
+    protected function initOptions()
+    {
+        $options = ArrayHelper::merge($this->_handler->getOptions($this->id), $this->options);
+
+        return $options;
     }
 }

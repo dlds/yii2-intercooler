@@ -26,7 +26,23 @@ use yii\helpers\ArrayHelper;
  * Intercooler provides bunch of event that can by listened for
  * * @see http://intercoolerjs.org/docs.html#events
  */
-abstract class Intercooler extends \yii\base\Widget {
+class Intercooler extends \yii\base\Object {
+
+    /**
+     * X Headers
+     */
+    const XH_REQUEST = 'X-IC-Request';
+    const XH_HTTP_METHOD_OVERRIDE = 'X-HTTP-Method-Override';
+    const XH_TRIEGGER = 'X-IC-Trigger';
+    const XH_REFRESH = 'X-IC-Refresh';
+    const XH_REDIRECT = 'X-IC-Redirect';
+    const XH_SCRIPT = 'X-IC-Script';
+    const XH_CANCEL_POLLING = 'X-IC-CancelPolling';
+    const XH_RESUME_POLLING = 'X-IC-ResumePolling';
+    const XH_SET_POLL_INTERVAL = 'X-IC-SetPollInterval';
+    const XH_OPEN = 'X-IC-Open';
+    const XH_PUSH_URL = 'X-IC-PushURL';
+    const XH_REMOVE = 'X-IC-Remove';
 
     /*
      * Requests types
@@ -36,6 +52,7 @@ abstract class Intercooler extends \yii\base\Widget {
     const RQ_TYPE_PUT = 'put-to';
     const RQ_TYPE_PATCH = 'patch-to';
     const RQ_TYPE_DELETE = 'delete-from';
+    const RQ_TYPE_APPEND = 'append-from';
     const RQ_TYPE_SRC = 'src';
 
     /**
@@ -55,6 +72,11 @@ abstract class Intercooler extends \yii\base\Widget {
     const ATTR_INCLUDE = 'include';
     const ATTR_INDICATOR = 'indicator';
     const ATTR_DEPENDS = 'deps';
+    // events
+    const ATTR_EVT_ON_BEFORE_SEND = 'on-beforeSend';
+    const ATTR_EVT_ON_SUCCESS = 'on-success';
+    const ATTR_EVT_ON_ERROR = 'on-error';
+    const ATTR_EVT_ON_COMPLETE = 'on-complete';
 
     /**
      * @var mixed destination url as string or destination route as array
@@ -106,71 +128,30 @@ abstract class Intercooler extends \yii\base\Widget {
     public $depends;
 
     /**
-     * @var string wrapper tag
-     */
-    public $tag = 'div';
-
-    /**
-     * @var array wrapper html options
-     */
-    public $options = [];
-
-    /**
      * @inheritdoc
      */
     public function init()
     {
         parent::init();
 
-        if (!$this->url)
-        {
-            throw new \yii\base\InvalidConfigException('Url parameter must be specified.');
-        }
+        $this->registerClientScript();
 
         if (is_array($this->url))
         {
             $this->url = \yii\helpers\Url::to($this->url);
         }
-
-        if (!is_array($this->options))
-        {
-            throw new \yii\base\InvalidConfigException('Options parameter must be an array.');
-        }
-
-        $this->registerClientScript();
-
-        $options = $this->getWrapperOptions();
-
-        echo Html::beginTag($this->tag, $options);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function run()
-    {
-        parent::run();
-
-        echo Html::endTag($this->tag);
-    }
-
-    /**
-     * Registers the needed JavaScript.
-     */
-    public function registerClientScript()
-    {
-        IntercoolerAsset::register($this->getView());
     }
 
     /**
      * Retrieves wrapper options based on widget config
      * @return array
      */
-    protected function getWrapperOptions()
+    public function getOptions($id, array $additionals = [])
     {
-        $options = ArrayHelper::merge($this->options, [
-                self::getAttrName($this->type) => $this->url,
-        ]);
+        $options = [
+            'id' => $id,
+            self::getAttrName($this->type) => $this->url,
+        ];
 
         foreach ($this->getAttrBound() as $param => $attr)
         {
@@ -180,7 +161,15 @@ abstract class Intercooler extends \yii\base\Widget {
             }
         }
 
-        return $options;
+        return ArrayHelper::merge($options, $additionals);
+    }
+
+    /**
+     * Registers the needed JavaScript.
+     */
+    public function registerClientScript()
+    {
+        IntercoolerAsset::register(\Yii::$app->getView());
     }
 
     /**
@@ -207,5 +196,19 @@ abstract class Intercooler extends \yii\base\Widget {
     public static function getAttrName($type)
     {
         return sprintf('%s-%s', self::ATTR_PREFIX, $type);
+    }
+
+    /**
+     * Sets refresh headers for given paths
+     * @param array $paths
+     */
+    public static function doRefresh(array $paths = [])
+    {
+        $headers = ($response = \Yii::$app->getResponse()) ? $response->headers : false;
+
+        if ($headers)
+        {
+            $headers->add(self::XH_REFRESH, implode(',', $paths));
+        }
     }
 }
