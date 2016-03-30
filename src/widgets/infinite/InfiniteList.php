@@ -77,9 +77,7 @@ class InfiniteList extends \yii\widgets\ListView {
      */
     public function run()
     {
-        $partial = \Yii::$app->request->get(InfiniteListPager::PARAM_PARTIAL_OUTPUT);
-
-        if ($partial)
+        if (self::isPratial())
         {
             if ($this->showOnEmpty || $this->dataProvider->getCount() > 0)
             {
@@ -148,6 +146,7 @@ class InfiniteList extends \yii\widgets\ListView {
     {
         return Html::tag('div', $this->indicatorRefresh, [
                 'id' => $this->getIndicatorRefreshId(),
+                'class' => 'ic-indicator',
                 'style' => 'display: none'
         ]);
     }
@@ -159,5 +158,14 @@ class InfiniteList extends \yii\widgets\ListView {
     protected function getIndicatorRefreshId()
     {
         return sprintf('%s-%s', $this->id, self::KEY_INDICATOR_REFRESH);
+    }
+
+    /**
+     * Indicates if current rendering is partial
+     * @return boolean
+     */
+    public static function isPratial()
+    {
+        return \Yii::$app->request->get(InfiniteListPager::PARAM_PARTIAL_OUTPUT, false);
     }
 }

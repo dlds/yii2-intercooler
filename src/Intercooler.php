@@ -211,4 +211,18 @@ class Intercooler extends \yii\base\Object {
             $headers->add(self::XH_REFRESH, implode(',', $paths));
         }
     }
+
+    /**
+     * Sets remove headers
+     * @param boolean $value
+     */
+    public static function doRemove($value = true)
+    {
+        $headers = ($response = \Yii::$app->getResponse()) ? $response->headers : false;
+
+        if ($headers)
+        {
+            $headers->add(self::XH_REMOVE, $value);
+        }
+    }
 }
