@@ -77,7 +77,7 @@ class InfiniteList extends \yii\widgets\ListView {
      */
     public function run()
     {
-        if (self::isPratial())
+        if (self::isPartial($this->id))
         {
             if ($this->showOnEmpty || $this->dataProvider->getCount() > 0)
             {
@@ -85,7 +85,7 @@ class InfiniteList extends \yii\widgets\ListView {
                     $content = $this->renderSection($matches[0]);
 
                     return $content === false ? $matches[0] : $content;
-                }, $this->partialLayout);
+                }, $this->detectLayout($this->id));
             }
             else
             {
@@ -161,11 +161,42 @@ class InfiniteList extends \yii\widgets\ListView {
     }
 
     /**
-     * Indicates if current rendering is partial
+     * Detects layout which will be used
+     */
+    protected function detectLayout($id)
+    {
+        if (self::isPartial($id) && !self::isRefresh($id))
+        {
+            return $this->partialLayout;
+        }
+
+        return $this->layout;
+    }
+
+    /**
+     * Indicates if current request is partial (next page)
      * @return boolean
      */
-    public static function isPratial()
+    public static function isPartial($id)
     {
-        return \Yii::$app->request->get(InfiniteListPager::PARAM_PARTIAL_OUTPUT, false);
+        $isPartial = \Yii::$app->request->get(InfiniteListPager::QP_PARTIAL_OUTPUT, false);
+
+        if (!$isPartial)
+        {
+            $isPartial = self::isRefresh($id);
+        }
+
+        return (boolean) $isPartial;
+    }
+
+    /**
+     * Indicates if current request is refresh
+     * @return boolean
+     */
+    public static function isRefresh($id)
+    {
+        $trigger = \Yii::$app->request->get(Intercooler::getAttrName(Intercooler::QP_TRIGGER), false);
+
+        return $id == $trigger;
     }
 }

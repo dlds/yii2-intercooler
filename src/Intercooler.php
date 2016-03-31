@@ -44,6 +44,17 @@ class Intercooler extends \yii\base\Object {
     const XH_PUSH_URL = 'X-IC-PushURL';
     const XH_REMOVE = 'X-IC-Remove';
 
+    /**
+     * Prefix
+     */
+    const PREFIX_DEFAULT = 'ic';
+
+    /**
+     * Query params
+     */
+    const QP_TARGET = 'target-id';
+    const QP_TRIGGER = 'trigger-id';
+    const QP_LAST_REFRESH = 'last-refresh';
     /*
      * Requests types
      */
@@ -65,7 +76,6 @@ class Intercooler extends \yii\base\Object {
     /**
      * Intercooler attributes
      */
-    const ATTR_PREFIX = 'ic';
     const ATTR_TRIGGER_ON = 'trigger-on';
     const ATTR_TRIGGER_DELAY = 'trigger-delay';
     const ATTR_TARGET = 'target';
@@ -195,7 +205,7 @@ class Intercooler extends \yii\base\Object {
      */
     public static function getAttrName($type)
     {
-        return sprintf('%s-%s', self::ATTR_PREFIX, $type);
+        return sprintf('%s-%s', self::PREFIX_DEFAULT, $type);
     }
 
     /**

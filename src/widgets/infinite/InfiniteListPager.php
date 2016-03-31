@@ -32,9 +32,9 @@ class InfiniteListPager extends \yii\widgets\LinkPager {
     const ATTR_REPLACE_TARGET = 'replace-target';
 
     /**
-     * Params
+     * Query params
      */
-    const PARAM_PARTIAL_OUTPUT = 'partial-output';
+    const QP_PARTIAL_OUTPUT = 'partial-output';
 
     /**
      * Element key
@@ -120,7 +120,7 @@ class InfiniteListPager extends \yii\widgets\LinkPager {
         $this->_handler = new \dlds\intercooler\Intercooler($this->intercooler);
 
         $this->_handler->url = $this->pagination->createUrl($this->getNextPage());
-        $this->_handler->include = \yii\helpers\Json::encode([self::PARAM_PARTIAL_OUTPUT => 1]);
+        $this->_handler->include = \yii\helpers\Json::encode([self::QP_PARTIAL_OUTPUT => 1]);
 
         if (self::B_ON_CLICK === $this->behavior)
         {
