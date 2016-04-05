@@ -36,6 +36,11 @@ class InfiniteList extends \yii\widgets\ListView {
     public $indicatorRefresh;
 
     /**
+     * @var array custom sections
+     */
+    public $sections = [];
+
+    /**
      * @var array intercooler config
      */
     public $intercooler = [];
@@ -101,28 +106,32 @@ class InfiniteList extends \yii\widgets\ListView {
     }
 
     /**
-     * Renders a section of the specified name.
-     * If the named section is not supported, false will be returned.
-     * @param string $name the section name, e.g., `{summary}`, `{items}`.
-     * @return string|boolean the rendering result of the section, or false if the named section is not supported.
+     * @inheritdoc
      */
     public function renderSection($name)
     {
         switch ($name)
         {
-            case '{summary}':
-                return $this->renderSummary();
             case '{indicatorRefresh}':
                 return $this->renderIndicatorRefresh();
-            case '{items}':
-                return $this->renderItems();
-            case '{pager}':
-                return $this->renderPager();
-            case '{sorter}':
-                return $this->renderSorter();
             default:
-                return false;
+                return $this->renderCustomSection($name);
         }
+    }
+
+    /**
+     * Renders a custom section if is specified otherwise calls parent render method
+     * @param string $name the section name, e.g., `{summary}`, `{items}`.
+     * @return string|boolean the rendering result of the section, or false if the named section is not supported.
+     */
+    public function renderCustomSection($name)
+    {
+        if (isset($this->sections[$name]))
+        {
+            return $this->sections[$name] ? $this->sections[$name] : '';
+        }
+
+        return parent::renderSection($name);
     }
 
     /**
