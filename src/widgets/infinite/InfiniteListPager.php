@@ -117,6 +117,11 @@ class InfiniteListPager extends \yii\widgets\LinkPager {
      */
     public function initPager()
     {
+        if (!isset($this->options['id']))
+        {
+            $this->options['id'] = self::generateId($this->id);
+        }
+
         $this->_handler = new \dlds\intercooler\Intercooler($this->intercooler);
 
         $this->_handler->url = $this->pagination->createUrl($this->getNextPage());
@@ -125,7 +130,7 @@ class InfiniteListPager extends \yii\widgets\LinkPager {
         if (self::B_ON_CLICK === $this->behavior)
         {
             $this->_handler->type = Intercooler::RQ_TYPE_GET;
-            $this->_handler->target = sprintf('#%s', $this->getPagerId());
+            $this->_handler->target = sprintf('#%s', $this->options['id']);
             $this->_handler->indicator = sprintf('#%s', $this->getIndicatorLoadingId());
             $this->replaceTarget = true;
         }
@@ -138,10 +143,7 @@ class InfiniteListPager extends \yii\widgets\LinkPager {
             $this->_handler->target = 'closest div';
         }
 
-        if (!isset($this->options['id']))
-        {
-            $this->options['id'] = $this->getPagerId();
-        }
+        
     }
 
     /**
@@ -205,15 +207,6 @@ class InfiniteListPager extends \yii\widgets\LinkPager {
         }
 
         return ArrayHelper::merge($this->_handler->getOptions($this->getTriggerId(), $additionals), $this->linkOptions);
-    }
-
-    /**
-     * Retrieves pager unique identificaiton
-     * @return string
-     */
-    protected function getPagerId()
-    {
-        return sprintf('%s-%s', $this->id, self::KEY_PAGER);
     }
 
     /**
@@ -294,5 +287,15 @@ class InfiniteListPager extends \yii\widgets\LinkPager {
     protected function getTotalPageCount()
     {
         return $this->pagination->getPageCount();
+    }
+
+    /**
+     * Generates pager id
+     * @param string $id
+     * @return string
+     */
+    public static function generateId($id)
+    {
+        return sprintf('%s-%s', $id, self::KEY_PAGER);
     }
 }
