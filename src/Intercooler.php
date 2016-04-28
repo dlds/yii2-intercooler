@@ -209,6 +209,20 @@ class Intercooler extends \yii\base\Object {
     }
 
     /**
+     * Sets redirect headers for given url
+     * @param string $url
+     */
+    public static function doRedirect($url)
+    {
+        $headers = ($response = \Yii::$app->getResponse()) ? $response->headers : false;
+
+        if ($headers)
+        {
+            $headers->add(self::XH_REDIRECT, $url);
+        }
+    }
+
+     /**
      * Sets refresh headers for given paths
      * @param array $paths
      */
