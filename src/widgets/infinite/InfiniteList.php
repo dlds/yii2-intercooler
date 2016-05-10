@@ -71,7 +71,7 @@ class InfiniteList extends \yii\widgets\ListView {
 
         if ($this->indicatorRefresh)
         {
-            $options[Intercooler::getAttrName(Intercooler::ATTR_INDICATOR)] = sprintf('#%s', $this->getIndicatorRefreshId());
+            $options[Intercooler::getAttrName(Intercooler::ATTR_INDICATOR)] = $this->getIndicatorRefreshId(true);
         }
 
         $this->options = $options;
@@ -164,9 +164,9 @@ class InfiniteList extends \yii\widgets\ListView {
      * Retrieves refresh indicator unique identificaiton
      * @return string
      */
-    protected function getIndicatorRefreshId()
+    protected function getIndicatorRefreshId($hash = false)
     {
-        return sprintf('%s-%s', $this->id, self::KEY_INDICATOR_REFRESH);
+        return self::getElementId($this->id, self::KEY_INDICATOR_REFRESH, $hash);
     }
 
     /**
@@ -207,5 +207,21 @@ class InfiniteList extends \yii\widgets\ListView {
         $trigger = \Yii::$app->request->get(Intercooler::getAttrName(Intercooler::QP_TRIGGER), false);
 
         return $id == $trigger;
+    }
+
+    /**
+     * Retrieves element id
+     * @param string $id
+     * @param string $suffix
+     * @return string
+     */
+    public static function getElementId($id, $suffix, $hash = false)
+    {
+        if ($hash)
+        {
+            return sprintf('#%s-%s', $id, $suffix);
+        }
+
+        return sprintf('%s-%s', $id, $suffix);
     }
 }

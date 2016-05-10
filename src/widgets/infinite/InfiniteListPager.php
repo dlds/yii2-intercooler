@@ -142,8 +142,6 @@ class InfiniteListPager extends \yii\widgets\LinkPager {
             $this->_handler->indicator = sprintf('#%s', $this->getIndicatorLoadingId());
             $this->_handler->target = 'closest div';
         }
-
-        
     }
 
     /**
@@ -215,7 +213,7 @@ class InfiniteListPager extends \yii\widgets\LinkPager {
      */
     protected function getTriggerId()
     {
-        return sprintf('%s-%s', $this->id, self::KEY_TRIGGER);
+        return self::getElementId($this->id, self::KEY_TRIGGER);
     }
 
     /**
@@ -224,7 +222,7 @@ class InfiniteListPager extends \yii\widgets\LinkPager {
      */
     protected function getIndicatorLoadingId()
     {
-        return sprintf('%s-%s', $this->id, self::KEY_INDICATOR_LOADING);
+        return self::getElementId($this->id, self::KEY_INDICATOR_LOADING);
     }
 
     /**
@@ -233,7 +231,7 @@ class InfiniteListPager extends \yii\widgets\LinkPager {
      */
     protected function getIndicatorErrorId()
     {
-        return sprintf('%s-%s', $this->id, self::KEY_INDICATOR_ERROR);
+        return self::getElementId($this->id, self::KEY_INDICATOR_ERROR);
     }
 
     /**
@@ -296,6 +294,17 @@ class InfiniteListPager extends \yii\widgets\LinkPager {
      */
     public static function generateId($id)
     {
-        return sprintf('%s-%s', $id, self::KEY_PAGER);
+        return self::getElementId($id, self::KEY_PAGER);
+    }
+
+    /**
+     * Retrieves element id
+     * @param string $id
+     * @param string $suffix
+     * @return string
+     */
+    public static function getElementId($id, $suffix)
+    {
+        return sprintf('%s-%s', $id, $suffix);
     }
 }

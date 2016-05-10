@@ -25,6 +25,11 @@ class Clickable extends \yii\base\Widget {
     public $wrapper = 'div';
 
     /**
+     * @var string additional content
+     */
+    public $content;
+
+    /**
      * @var array additional wrapper options
      */
     public $options = [];
@@ -54,6 +59,11 @@ class Clickable extends \yii\base\Widget {
      */
     public function run()
     {
+        if ($this->content)
+        {
+            echo $this->content;
+        }
+
         echo Html::endTag($this->wrapper);
     }
 
