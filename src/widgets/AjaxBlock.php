@@ -12,12 +12,12 @@ use yii\helpers\ArrayHelper;
 use dlds\intercooler\Intercooler;
 
 /**
- * This is the main class of the Clickable widget
+ * This is the main class of the Block widget
  *
  * @author Jiri Svoboda <jiri.svobodao@dlds.cz>
  * @package lazyload
  */
-class Clickable extends \yii\base\Widget {
+class AjaxBlock extends \yii\base\Widget {
 
     /**
      * @var string wrapper tag
