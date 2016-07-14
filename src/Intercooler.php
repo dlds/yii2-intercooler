@@ -1,8 +1,10 @@
 <?php
+
 /**
  * @link http://www.digitaldeals.cz/
  * @copyright Copyright (c) 2016 Digital Deals s.r.o.
  * @license http://www.digitaldeals.cz/license/
+ * @author Jiri Svoboda <jiri.svoboda@dlds.cz>
  */
 
 namespace dlds\intercooler;
@@ -26,7 +28,8 @@ use yii\helpers\ArrayHelper;
  * Intercooler provides bunch of event that can by listened for
  * * @see http://intercoolerjs.org/docs.html#events
  */
-class Intercooler extends \yii\base\Object {
+class Intercooler extends \yii\base\Object
+{
 
     /**
      * X Headers
@@ -146,8 +149,7 @@ class Intercooler extends \yii\base\Object {
 
         $this->registerClientScript();
 
-        if (is_array($this->url))
-        {
+        if (is_array($this->url)) {
             $this->url = \yii\helpers\Url::to($this->url);
         }
     }
@@ -163,10 +165,8 @@ class Intercooler extends \yii\base\Object {
             self::getAttrName($this->type) => $this->url,
         ];
 
-        foreach ($this->getAttrBound() as $param => $attr)
-        {
-            if (isset($this->$param) && $this->$param)
-            {
+        foreach ($this->getAttrBound() as $param => $attr) {
+            if (isset($this->$param) && $this->$param) {
                 $options[self::getAttrName($attr)] = $this->$param;
             }
         }
@@ -216,13 +216,12 @@ class Intercooler extends \yii\base\Object {
     {
         $headers = ($response = \Yii::$app->getResponse()) ? $response->headers : false;
 
-        if ($headers)
-        {
+        if ($headers) {
             $headers->add(self::XH_REDIRECT, $url);
         }
     }
 
-     /**
+    /**
      * Sets refresh headers for given paths
      * @param array $paths
      */
@@ -230,8 +229,7 @@ class Intercooler extends \yii\base\Object {
     {
         $headers = ($response = \Yii::$app->getResponse()) ? $response->headers : false;
 
-        if ($headers)
-        {
+        if ($headers) {
             $headers->add(self::XH_REFRESH, implode(',', $paths));
         }
     }
@@ -244,9 +242,9 @@ class Intercooler extends \yii\base\Object {
     {
         $headers = ($response = \Yii::$app->getResponse()) ? $response->headers : false;
 
-        if ($headers)
-        {
+        if ($headers) {
             $headers->add(self::XH_REMOVE, $value);
         }
     }
+
 }

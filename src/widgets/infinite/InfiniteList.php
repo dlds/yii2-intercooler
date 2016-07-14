@@ -1,8 +1,10 @@
 <?php
+
 /**
- * @link http://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
+ * @link http://www.digitaldeals.cz/
+ * @copyright Copyright (c) 2016 Digital Deals s.r.o.
+ * @license http://www.digitaldeals.cz/license/
+ * @author Jiri Svoboda <jiri.svoboda@dlds.cz>
  */
 
 namespace dlds\intercooler\widgets\infinite;
@@ -11,14 +13,17 @@ use yii\helpers\Html;
 use dlds\intercooler\Intercooler;
 
 /**
- * The ListView widget is used to display data from data
- * provider. Each data model is rendered using the view
- * specified.
+ * This is Infinite List widget which enhaces standart ListView widget.
+ * ---
+ * Infinite list works with ajax loaded content to the end of current list
+ * based on user interaction.
+ * ---
  *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @since 2.0
+ * @author Jiri Svoboda <jiri.svoboda@dlds.cz>
+ * @package intercooler
  */
-class InfiniteList extends \yii\widgets\ListView {
+class InfiniteList extends \yii\widgets\ListView
+{
 
     /**
      * Element keys
@@ -69,8 +74,7 @@ class InfiniteList extends \yii\widgets\ListView {
     {
         $options = \yii\helpers\ArrayHelper::merge($this->_handler->getOptions($this->id), $this->options);
 
-        if ($this->indicatorRefresh)
-        {
+        if ($this->indicatorRefresh) {
             $options[Intercooler::getAttrName(Intercooler::ATTR_INDICATOR)] = $this->getIndicatorRefreshId(true);
         }
 
@@ -82,25 +86,19 @@ class InfiniteList extends \yii\widgets\ListView {
      */
     public function run()
     {
-        if (self::isPartial($this->id))
-        {
-            if ($this->showOnEmpty || $this->dataProvider->getCount() > 0)
-            {
+        if (self::isPartial($this->id)) {
+            if ($this->showOnEmpty || $this->dataProvider->getCount() > 0) {
                 $content = preg_replace_callback("/{\\w+}/", function ($matches) {
                     $content = $this->renderSection($matches[0]);
 
                     return $content === false ? $matches[0] : $content;
                 }, $this->detectLayout($this->id));
-            }
-            else
-            {
+            } else {
                 $content = $this->renderEmpty();
             }
 
             echo $content;
-        }
-        else
-        {
+        } else {
             return parent::run();
         }
     }
@@ -110,8 +108,7 @@ class InfiniteList extends \yii\widgets\ListView {
      */
     public function renderSection($name)
     {
-        switch ($name)
-        {
+        switch ($name) {
             case '{indicatorRefresh}':
                 return $this->renderIndicatorRefresh();
             default:
@@ -126,8 +123,7 @@ class InfiniteList extends \yii\widgets\ListView {
      */
     public function renderCustomSection($name)
     {
-        if (isset($this->sections[$name]))
-        {
+        if (isset($this->sections[$name])) {
             return $this->sections[$name] ? $this->sections[$name] : '';
         }
 
@@ -139,8 +135,7 @@ class InfiniteList extends \yii\widgets\ListView {
      */
     public function renderEmpty()
     {
-        if ($this->pager && isset($this->pager['indicatorEmpty']))
-        {
+        if ($this->pager && isset($this->pager['indicatorEmpty'])) {
             return $this->pager['indicatorEmpty'];
         }
 
@@ -154,9 +149,9 @@ class InfiniteList extends \yii\widgets\ListView {
     protected function renderIndicatorRefresh()
     {
         return Html::tag('div', $this->indicatorRefresh, [
-                'id' => $this->getIndicatorRefreshId(),
-                'class' => 'ic-indicator',
-                'style' => 'display: none'
+                    'id' => $this->getIndicatorRefreshId(),
+                    'class' => 'ic-indicator',
+                    'style' => 'display: none'
         ]);
     }
 
@@ -174,8 +169,7 @@ class InfiniteList extends \yii\widgets\ListView {
      */
     protected function detectLayout($id)
     {
-        if (self::isPartial($id) && !self::isRefresh($id))
-        {
+        if (self::isPartial($id) && !self::isRefresh($id)) {
             return $this->partialLayout;
         }
 
@@ -190,8 +184,7 @@ class InfiniteList extends \yii\widgets\ListView {
     {
         $isPartial = \Yii::$app->request->get(InfiniteListPager::QP_PARTIAL_OUTPUT, false);
 
-        if (!$isPartial)
-        {
+        if (!$isPartial) {
             $isPartial = self::isRefresh($id);
         }
 
@@ -217,11 +210,11 @@ class InfiniteList extends \yii\widgets\ListView {
      */
     public static function getElementId($id, $suffix, $hash = false)
     {
-        if ($hash)
-        {
+        if ($hash) {
             return sprintf('#%s-%s', $id, $suffix);
         }
 
         return sprintf('%s-%s', $id, $suffix);
     }
+
 }

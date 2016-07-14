@@ -1,8 +1,10 @@
 <?php
+
 /**
  * @link http://www.digitaldeals.cz/
  * @copyright Copyright (c) 2016 Digital Deals s.r.o.
  * @license http://www.digitaldeals.cz/license/
+ * @author Jiri Svoboda <jiri.svoboda@dlds.cz>
  */
 
 namespace dlds\intercooler\widgets;
@@ -12,12 +14,16 @@ use yii\helpers\ArrayHelper;
 use dlds\intercooler\Intercooler;
 
 /**
- * This is the main class of the Block widget
+ * This is the main class of the Ajax Block widget
+ * ---
+ * Used for easy init intercooler on html element
+ * ---
  *
  * @author Jiri Svoboda <jiri.svobodao@dlds.cz>
  * @package lazyload
  */
-class AjaxBlock extends \yii\base\Widget {
+class AjaxBlock extends \yii\base\Widget
+{
 
     /**
      * @var string wrapper tag
@@ -30,12 +36,22 @@ class AjaxBlock extends \yii\base\Widget {
     public $content;
 
     /**
-     * @var array additional wrapper options
+     * @var array additional wrapper html options
      */
     public $options = [];
 
     /**
-     * @var array additional wrapper options
+     * @var string inital html before lazily load is done
+     */
+    public $loadingHtml;
+
+    /**
+     * @var string fallback html if lazily load failed
+     */
+    public $fallbackHtml;
+
+    /**
+     * @var array additional wrapper html options
      */
     public $intercooler = [];
 
@@ -52,6 +68,19 @@ class AjaxBlock extends \yii\base\Widget {
         $this->_handler = new Intercooler($this->intercooler);
 
         echo Html::beginTag($this->wrapper, $this->initOptions());
+
+        if ($this->loadingHtml) {
+            echo Html::tag('div', $this->loadingHtml, [
+                'class' => 'ic-loading ic-indicator',
+            ]);
+        }
+
+        if ($this->fallbackHtml) {
+            echo Html::tag('div', $this->fallbackHtml, [
+                'class' => 'ic-fallback',
+                'style' => 'display:none',
+            ]);
+        }
     }
 
     /**
@@ -59,8 +88,7 @@ class AjaxBlock extends \yii\base\Widget {
      */
     public function run()
     {
-        if ($this->content)
-        {
+        if ($this->content) {
             echo $this->content;
         }
 
@@ -74,6 +102,13 @@ class AjaxBlock extends \yii\base\Widget {
     {
         $options = ArrayHelper::merge($this->_handler->getOptions($this->id), $this->options);
 
+        if ($this->fallbackHtml) {
+            $options[Intercooler::getAttrName(Intercooler::ATTR_EVT_ON_ERROR)] = new \yii\web\JsExpression("var e = document.querySelector('#$this->id .ic-fallback'); if (typeof(e) != 'undefined' && e != null) {e.style.display = null;}");
+            $options[Intercooler::getAttrName(Intercooler::ATTR_EVT_ON_BEFORE_SEND)] = new \yii\web\JsExpression("var icf = document.querySelector('#$this->id .ic-fallback'); if (typeof(icf) != 'undefined' && icf != null) {icf.style.display = 'none';} var icl = document.querySelector('#$this->id .ic-loading'); if (typeof(icl) != 'undefined' && icl != null) {icl.style.display = null;}");
+            $options[Intercooler::getAttrName(Intercooler::ATTR_EVT_ON_COMPLETE)] = new \yii\web\JsExpression("var e = document.querySelector('#$this->id .ic-loading'); if (typeof(e) != 'undefined' && e != null) {e.style.display = 'none';}");
+        }
+
         return $options;
     }
+
 }

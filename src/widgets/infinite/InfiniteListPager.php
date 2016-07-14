@@ -1,8 +1,10 @@
 <?php
+
 /**
  * @link http://www.digitaldeals.cz/
  * @copyright Copyright (c) 2016 Digital Deals s.r.o.
  * @license http://www.digitaldeals.cz/license/
+ * @author Jiri Svoboda <jiri.svoboda@dlds.cz>
  */
 
 namespace dlds\intercooler\widgets\infinite;
@@ -12,12 +14,17 @@ use yii\helpers\ArrayHelper;
 use dlds\intercooler\Intercooler;
 
 /**
- * This is the main class of the InfiniteScroll widget
- *
+ * This is the main class of the InfiniteListPager widget
+ * ---
+ * Pager is used together with InfiniteList to handling paging and
+ * storing info about current page.
+ * ---
+ * @see InfiniteList
  * @author Jiri Svoboda <jiri.svobodao@dlds.cz>
- * @package lazyload
+ * @package intercooler
  */
-class InfiniteListPager extends \yii\widgets\LinkPager {
+class InfiniteListPager extends \yii\widgets\LinkPager
+{
 
     /**
      * Behaviors types
@@ -117,8 +124,7 @@ class InfiniteListPager extends \yii\widgets\LinkPager {
      */
     public function initPager()
     {
-        if (!isset($this->options['id']))
-        {
+        if (!isset($this->options['id'])) {
             $this->options['id'] = self::generateId($this->id);
         }
 
@@ -127,16 +133,14 @@ class InfiniteListPager extends \yii\widgets\LinkPager {
         $this->_handler->url = $this->pagination->createUrl($this->getNextPage());
         $this->_handler->include = \yii\helpers\Json::encode([self::QP_PARTIAL_OUTPUT => 1]);
 
-        if (self::B_ON_CLICK === $this->behavior)
-        {
+        if (self::B_ON_CLICK === $this->behavior) {
             $this->_handler->type = Intercooler::RQ_TYPE_GET;
             $this->_handler->target = sprintf('#%s', $this->options['id']);
             $this->_handler->indicator = sprintf('#%s', $this->getIndicatorLoadingId());
             $this->replaceTarget = true;
         }
 
-        if (self::B_ON_SCROLL === $this->behavior)
-        {
+        if (self::B_ON_SCROLL === $this->behavior) {
             $this->_handler->type = Intercooler::RQ_TYPE_APPEND;
             $this->_handler->trigger = Intercooler::EVENT_ON_SCROLLED_INTO_VIEW;
             $this->_handler->indicator = sprintf('#%s', $this->getIndicatorLoadingId());
@@ -151,10 +155,8 @@ class InfiniteListPager extends \yii\widgets\LinkPager {
     {
         $total = $this->getTotalPageCount();
 
-        if ($total < 2)
-        {
-            if (!$this->hideOnSinglePage)
-            {
+        if ($total < 2) {
+            if (!$this->hideOnSinglePage) {
                 return $this->indicatorDone;
             }
 
@@ -173,8 +175,7 @@ class InfiniteListPager extends \yii\widgets\LinkPager {
     {
         $options = $this->getPageBtnOptions($page);
 
-        if (!$disabled)
-        {
+        if (!$disabled) {
             $html = $this->getIndicatorLoading();
 
             $html .= $this->getIndicatorError();
@@ -197,8 +198,7 @@ class InfiniteListPager extends \yii\widgets\LinkPager {
             Intercooler::getAttrName(self::ATTR_REPLACE_TARGET) => $this->replaceTarget ? "true" : "false",
         ];
 
-        if ($this->indicatorError)
-        {
+        if ($this->indicatorError) {
             $additionals[Intercooler::getAttrName(Intercooler::ATTR_EVT_ON_ERROR)] = new \yii\web\JsExpression("var e = document.querySelector('#$this->indicatorErrorId'); if (typeof(e) != 'undefined' && e != null) {e.style.display = null;}");
             $additionals[Intercooler::getAttrName(Intercooler::ATTR_EVT_ON_BEFORE_SEND)] = new \yii\web\JsExpression("var icf = document.querySelector('#$this->indicatorErrorId'); if (typeof(icf) != 'undefined' && icf != null) {icf.style.display = 'none';} var icl = document.querySelector('#$this->indicatorLoadingId'); if (typeof(icl) != 'undefined' && icl != null) {icl.style.display = null;}");
             $additionals[Intercooler::getAttrName(Intercooler::ATTR_EVT_ON_COMPLETE)] = new \yii\web\JsExpression("var e = document.querySelector('#$this->indicatorLoadingId'); if (typeof(e) != 'undefined' && e != null) {e.style.display = 'none';}");
@@ -241,8 +241,8 @@ class InfiniteListPager extends \yii\widgets\LinkPager {
     protected function getIndicatorLoading()
     {
         return Html::tag('div', $this->indicatorLoading, [
-                'id' => $this->getIndicatorLoadingId(),
-                'style' => 'display: none'
+                    'id' => $this->getIndicatorLoadingId(),
+                    'style' => 'display: none'
         ]);
     }
 
@@ -253,8 +253,8 @@ class InfiniteListPager extends \yii\widgets\LinkPager {
     protected function getIndicatorError()
     {
         return Html::tag('div', $this->indicatorError, [
-                'id' => $this->getIndicatorErrorId(),
-                'style' => 'display: none'
+                    'id' => $this->getIndicatorErrorId(),
+                    'style' => 'display: none'
         ]);
     }
 
@@ -270,8 +270,7 @@ class InfiniteListPager extends \yii\widgets\LinkPager {
 
         $total = $this->getTotalPageCount();
 
-        if ($next >= $total - 1)
-        {
+        if ($next >= $total - 1) {
             $next = $total - 1;
         }
 
@@ -307,4 +306,5 @@ class InfiniteListPager extends \yii\widgets\LinkPager {
     {
         return sprintf('%s-%s', $id, $suffix);
     }
+
 }

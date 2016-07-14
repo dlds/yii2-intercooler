@@ -1,8 +1,10 @@
 <?php
+
 /**
  * @link http://www.digitaldeals.cz/
  * @copyright Copyright (c) 2016 Digital Deals s.r.o.
  * @license http://www.digitaldeals.cz/license/
+ * @author Jiri Svoboda <jiri.svoboda@dlds.cz>
  */
 
 namespace dlds\intercooler\widgets;
@@ -15,12 +17,13 @@ use dlds\intercooler\Intercooler;
  * This is the main class of the AjaxForm widget
  *
  * @author Jiri Svoboda <jiri.svobodao@dlds.cz>
- * @package lazyload
+ * @package intercooler
  */
-class AjaxForm extends \yii\widgets\ActiveForm {
+class AjaxForm extends \yii\widgets\ActiveForm
+{
 
     /**
-     * @var array additional wrapper options
+     * @var array additional wrapper html options
      */
     public $intercooler = [];
 
@@ -36,8 +39,7 @@ class AjaxForm extends \yii\widgets\ActiveForm {
     {
         $this->_handler = new Intercooler($this->intercooler);
 
-        if (!isset($this->options['id']))
-        {
+        if (!isset($this->options['id'])) {
             $this->options['id'] = $this->getId();
         }
 
@@ -49,8 +51,7 @@ class AjaxForm extends \yii\widgets\ActiveForm {
      */
     public function run()
     {
-        if (!empty($this->_fields))
-        {
+        if (!empty($this->_fields)) {
             throw new InvalidCallException('Each beginField() should have a matching endField() call.');
         }
 
@@ -66,4 +67,5 @@ class AjaxForm extends \yii\widgets\ActiveForm {
 
         return $options;
     }
+
 }
