@@ -33,7 +33,7 @@ class InfiniteList extends \yii\widgets\ListView
     /**
      * @var string partail layout which will be used when partial output is required
      */
-    public $partialLayout;
+    public $partialLayout = "{items}{pager}";
 
     /**
      * @var string indicator refresh html
@@ -149,9 +149,9 @@ class InfiniteList extends \yii\widgets\ListView
     protected function renderIndicatorRefresh()
     {
         return Html::tag('div', $this->indicatorRefresh, [
-                    'id' => $this->getIndicatorRefreshId(),
-                    'class' => 'ic-indicator',
-                    'style' => 'display: none'
+                'id' => $this->getIndicatorRefreshId(),
+                'class' => 'ic-indicator',
+                'style' => 'display: none'
         ]);
     }
 
