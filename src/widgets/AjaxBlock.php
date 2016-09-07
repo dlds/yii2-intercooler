@@ -71,13 +71,13 @@ class AjaxBlock extends \yii\base\Widget
 
         if ($this->loadingHtml) {
             echo Html::tag('div', $this->loadingHtml, [
-                'class' => 'ic-loading ic-indicator',
+                'class' => 'ic-loading ic-ntc ic-indicator',
             ]);
         }
 
         if ($this->fallbackHtml) {
             echo Html::tag('div', $this->fallbackHtml, [
-                'class' => 'ic-fallback',
+                'class' => 'ic-fallback ic-ntc',
                 'style' => 'display:none',
             ]);
         }
@@ -103,9 +103,15 @@ class AjaxBlock extends \yii\base\Widget
         $options = ArrayHelper::merge($this->_handler->getOptions($this->id), $this->options);
 
         if ($this->fallbackHtml) {
-            $options[Intercooler::getAttrName(Intercooler::ATTR_EVT_ON_ERROR)] = new \yii\web\JsExpression("var e = document.querySelector('#$this->id .ic-fallback'); if (typeof(e) != 'undefined' && e != null) {e.style.display = null;}");
-            $options[Intercooler::getAttrName(Intercooler::ATTR_EVT_ON_BEFORE_SEND)] = new \yii\web\JsExpression("var icf = document.querySelector('#$this->id .ic-fallback'); if (typeof(icf) != 'undefined' && icf != null) {icf.style.display = 'none';} var icl = document.querySelector('#$this->id .ic-loading'); if (typeof(icl) != 'undefined' && icl != null) {icl.style.display = null;}");
-            $options[Intercooler::getAttrName(Intercooler::ATTR_EVT_ON_COMPLETE)] = new \yii\web\JsExpression("var e = document.querySelector('#$this->id .ic-loading'); if (typeof(e) != 'undefined' && e != null) {e.style.display = 'none';}");
+            $options[Intercooler::attr(Intercooler::ATTR_EVT_ON_ERROR)] = new \yii\web\JsExpression("var e = document.querySelector('#$this->id .ic-fallback'); if (typeof(e) != 'undefined' && e != null) {e.style.display = null;}");
+            $options[Intercooler::attr(Intercooler::ATTR_EVT_ON_BEFORE_SEND)] = new \yii\web\JsExpression("var icf = document.querySelector('#$this->id .ic-fallback'); if (typeof(icf) != 'undefined' && icf != null) {icf.style.display = 'none';} var icl = document.querySelector('#$this->id .ic-loading'); if (typeof(icl) != 'undefined' && icl != null) {icl.style.display = null;}");
+            $options[Intercooler::attr(Intercooler::ATTR_EVT_ON_COMPLETE)] = new \yii\web\JsExpression("var e = document.querySelector('#$this->id .ic-loading'); if (typeof(e) != 'undefined' && e != null) {e.style.display = 'none';}");
+        }
+
+        if ($this->_handler->indicator) {
+            // hides request indicator after document is ready
+            $js = new \yii\web\JsExpression("var e = document.querySelector('{$this->_handler->indicator}'); if (typeof(e) != 'undefined' && e != null) {e.style.display = 'none';}");
+            $this->getView()->registerJs($js);
         }
 
         return $options;

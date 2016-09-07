@@ -79,17 +79,45 @@ class Intercooler extends \yii\base\Object
     /**
      * Intercooler attributes
      */
+    const ATTR_ACTION = 'action';
+    const ATTR_ADD_CLASS = 'add-class';
+    const ATTR_CONFIRM = 'confirm';
+    const ATTR_DEPENDS = 'deps';
+    const ATTR_INDICATOR = 'indicator';
+    const ATTR_LIMIT_CHILDREN = 'limit-children';
+    const ATTR_LOCAL_VARS = 'local-vars';
+    const ATTR_POST_ERRORS_TO = 'post-errors-to';
+    const ATTR_PREPEND_FROM = 'prepend-from';
+    const ATTR_PROMPT = 'prompt';
+    const ATTR_PUSH_URL = 'push-url';
+    const ATTR_SELECT_FROM_RESPONSE = 'select-from-response';
+    const ATTR_STYLE_SRC = 'style-src';
+    const ATTR_TRANSITION_DURATION = 'transition-duration';
+    const ATTR_VERB = 'verb';
+    // includes
+    const ATTR_GLOBAL_INCLUDE = 'global-include';
+    const ATTR_INCLUDE = 'include';
+    // poll
+    const ATTR_PAUSE_POLLING = 'pause-polling';
+    const ATTR_POLL = 'poll';
+    const ATTR_POLL_REPEATS = 'poll-repeats';
+    // remove | replace
+    const ATTR_REMOVE_AFTER = 'remove-after';
+    const ATTR_REMOVE_CLASS = 'remove-class';
+    const ATTR_REPLACE_TARGET = 'replace-target';
+    // scroll
+    const ATTR_SCROLL_OFFSET = 'scroll-offset';
+    const ATTR_SCROLL_TO_TARGET = 'scroll-to-target';
+    // triggers & targets
     const ATTR_TRIGGER_ON = 'trigger-on';
     const ATTR_TRIGGER_DELAY = 'trigger-delay';
     const ATTR_TARGET = 'target';
-    const ATTR_INCLUDE = 'include';
-    const ATTR_INDICATOR = 'indicator';
-    const ATTR_DEPENDS = 'deps';
     // events
     const ATTR_EVT_ON_BEFORE_SEND = 'on-beforeSend';
-    const ATTR_EVT_ON_SUCCESS = 'on-success';
-    const ATTR_EVT_ON_ERROR = 'on-error';
+    const ATTR_EVT_ON_BEFORE_TRIGGER = 'on-beforeTrigger';
     const ATTR_EVT_ON_COMPLETE = 'on-complete';
+    const ATTR_EVT_ON_ERROR = 'on-error';
+    const ATTR_EVT_ON_SUCCESS = 'on-success';
 
     /**
      * @var mixed destination url as string or destination route as array
@@ -162,12 +190,12 @@ class Intercooler extends \yii\base\Object
     {
         $options = [
             'id' => $id,
-            self::getAttrName($this->type) => $this->url,
+            static::attr($this->type) => $this->url,
         ];
 
         foreach ($this->getAttrBound() as $param => $attr) {
             if (isset($this->$param) && $this->$param) {
-                $options[self::getAttrName($attr)] = $this->$param;
+                $options[static::attr($attr)] = $this->$param;
             }
         }
 
@@ -200,12 +228,12 @@ class Intercooler extends \yii\base\Object
 
     /**
      * Retrieves intercooler attribute name
-     * @param string $type
+     * @param string $key
      * @return string attr name
      */
-    public static function getAttrName($type)
+    public static function attr($key)
     {
-        return sprintf('%s-%s', self::PREFIX_DEFAULT, $type);
+        return sprintf('%s-%s', self::PREFIX_DEFAULT, $key);
     }
 
     /**

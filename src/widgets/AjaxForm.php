@@ -28,6 +28,16 @@ class AjaxForm extends \yii\widgets\ActiveForm
     public $intercooler = [];
 
     /**
+     * @var string inital html before lazily load is done
+     */
+    public $loadingHtml;
+
+    /**
+     * @var string fallback html if request failed
+     */
+    public $fallbackHtml;
+
+    /**
      * @var Intercooler instance
      */
     protected $_handler;
@@ -44,6 +54,20 @@ class AjaxForm extends \yii\widgets\ActiveForm
         }
 
         echo Html::beginTag('form', $this->initOptions());
+
+        if ($this->loadingHtml) {
+            echo Html::tag('div', $this->loadingHtml, [
+                'class' => 'ic-loading ic-ntc ic-indicator',
+                'style' => 'display:none',
+            ]);
+        }
+
+        if ($this->fallbackHtml) {
+            echo Html::tag('div', $this->fallbackHtml, [
+                'class' => 'ic-fallback ic-ntc',
+                'style' => 'display:none',
+            ]);
+        }
     }
 
     /**
@@ -64,6 +88,18 @@ class AjaxForm extends \yii\widgets\ActiveForm
     protected function initOptions()
     {
         $options = ArrayHelper::merge($this->_handler->getOptions($this->id), $this->options);
+
+        if ($this->fallbackHtml) {
+            $options[Intercooler::attr(Intercooler::ATTR_EVT_ON_ERROR)] = new \yii\web\JsExpression("var e = document.querySelector('#$this->id .ic-fallback'); if (typeof(e) != 'undefined' && e != null) {e.style.display = null;}");
+            $options[Intercooler::attr(Intercooler::ATTR_EVT_ON_BEFORE_SEND)] = new \yii\web\JsExpression("var icf = document.querySelector('#$this->id .ic-fallback'); if (typeof(icf) != 'undefined' && icf != null) {icf.style.display = 'none';} var icl = document.querySelector('#$this->id .ic-loading'); if (typeof(icl) != 'undefined' && icl != null) {icl.style.display = null;}");
+            $options[Intercooler::attr(Intercooler::ATTR_EVT_ON_COMPLETE)] = new \yii\web\JsExpression("var e = document.querySelector('#$this->id .ic-loading'); if (typeof(e) != 'undefined' && e != null) {e.style.display = 'none';}");
+        }
+
+        if ($this->_handler->indicator) {
+            // hides request indicator after document is ready
+            $js = new \yii\web\JsExpression("var e = document.querySelector('{$this->_handler->indicator}'); if (typeof(e) != 'undefined' && e != null) {e.style.display = 'none';}");
+            $this->getView()->registerJs($js);
+        }
 
         return $options;
     }

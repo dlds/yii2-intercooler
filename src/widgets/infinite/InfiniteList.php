@@ -10,6 +10,7 @@
 namespace dlds\intercooler\widgets\infinite;
 
 use yii\helpers\Html;
+use yii\helpers\ArrayHelper;
 use dlds\intercooler\Intercooler;
 
 /**
@@ -29,6 +30,7 @@ class InfiniteList extends \yii\widgets\ListView
      * Element keys
      */
     const KEY_INDICATOR_REFRESH = 'il-indicator-refresh';
+    const KEY_INDICATOR_EMPTY = 'il-indicator-empty';
 
     /**
      * @var string partail layout which will be used when partial output is required
@@ -75,7 +77,7 @@ class InfiniteList extends \yii\widgets\ListView
         $options = \yii\helpers\ArrayHelper::merge($this->_handler->getOptions($this->id), $this->options);
 
         if ($this->indicatorRefresh) {
-            $options[Intercooler::getAttrName(Intercooler::ATTR_INDICATOR)] = $this->getIndicatorRefreshId(true);
+            $options[Intercooler::attr(Intercooler::ATTR_INDICATOR)] = $this->getIndicatorRefreshId(true);
         }
 
         $this->options = $options;
@@ -86,21 +88,49 @@ class InfiniteList extends \yii\widgets\ListView
      */
     public function run()
     {
-        if (self::isPartial($this->id)) {
-            if ($this->showOnEmpty || $this->dataProvider->getCount() > 0) {
-                $content = preg_replace_callback("/{\\w+}/", function ($matches) {
-                    $content = $this->renderSection($matches[0]);
+        // print empty list when there is no data to show
+        if (!$this->dataProvider->getCount() && !$this->showOnEmpty) {
+            return $this->listEmpty();
+        }
 
-                    return $content === false ? $matches[0] : $content;
-                }, $this->detectLayout($this->id));
-            } else {
-                $content = $this->renderEmpty();
-            }
-
-            echo $content;
-        } else {
+        // use parent rendering when it is first (not partial) request
+        if (!static::isPartial($this->id)) {
             return parent::run();
         }
+
+        // print partial list
+        return $this->listPartial();
+    }
+
+    /**
+     * Prints partial list
+     * ---
+     * Use detected partial layout and renders customized partial list
+     * ---
+     * @see http://php.net/manual/en/function.preg-replace-callback.php
+     * ---
+     * @return string
+     */
+    public function listPartial()
+    {
+        echo preg_replace_callback("/{\\w+}/", function ($matches) {
+            $content = $this->renderSection($matches[0]);
+
+            return $content === false ? $matches[0] : $content;
+        }, $this->detectLayout($this->id));
+    }
+
+    /**
+     * Prints empty list
+     * ---
+     * Reders empty notice with list refresh indicator
+     * ---
+     * @return string
+     */
+    public function listEmpty()
+    {
+        echo $this->renderIndicatorRefresh();
+        echo $this->renderEmpty();
     }
 
     /**
@@ -135,11 +165,16 @@ class InfiniteList extends \yii\widgets\ListView
      */
     public function renderEmpty()
     {
-        if ($this->pager && isset($this->pager['indicatorEmpty'])) {
-            return $this->pager['indicatorEmpty'];
+        $empty = ArrayHelper::getValue($this->pager, 'indicatorEmpty');
+
+        if (!$empty) {
+            return parent::renderEmpty();
         }
 
-        return parent::renderEmpty();
+        return Html::tag('div', $empty, [
+                'id' => $this->getIndicatorEmptyId(),
+                'class' => self::KEY_INDICATOR_EMPTY,
+        ]);
     }
 
     /**
@@ -150,18 +185,27 @@ class InfiniteList extends \yii\widgets\ListView
     {
         return Html::tag('div', $this->indicatorRefresh, [
                 'id' => $this->getIndicatorRefreshId(),
-                'class' => 'ic-indicator',
+                'class' => self::KEY_INDICATOR_REFRESH,
                 'style' => 'display: none'
         ]);
     }
 
     /**
-     * Retrieves refresh indicator unique identificaiton
+     * Retrieves empty indicator unique identification
      * @return string
      */
-    protected function getIndicatorRefreshId($hash = false)
+    protected function getIndicatorEmptyId($withHash = false)
     {
-        return self::getElementId($this->id, self::KEY_INDICATOR_REFRESH, $hash);
+        return static::id($this->id, self::KEY_INDICATOR_EMPTY, $withHash);
+    }
+
+    /**
+     * Retrieves refresh indicator unique identification
+     * @return string
+     */
+    protected function getIndicatorRefreshId($withHash = false)
+    {
+        return static::id($this->id, self::KEY_INDICATOR_REFRESH, $withHash);
     }
 
     /**
@@ -169,7 +213,7 @@ class InfiniteList extends \yii\widgets\ListView
      */
     protected function detectLayout($id)
     {
-        if (self::isPartial($id) && !self::isRefresh($id)) {
+        if (static::isPartial($id) && !static::isRefresh($id)) {
             return $this->partialLayout;
         }
 
@@ -185,7 +229,7 @@ class InfiniteList extends \yii\widgets\ListView
         $isPartial = \Yii::$app->request->get(InfiniteListPager::QP_PARTIAL_OUTPUT, false);
 
         if (!$isPartial) {
-            $isPartial = self::isRefresh($id);
+            $isPartial = static::isRefresh($id);
         }
 
         return (boolean) $isPartial;
@@ -197,24 +241,27 @@ class InfiniteList extends \yii\widgets\ListView
      */
     public static function isRefresh($id)
     {
-        $trigger = \Yii::$app->request->get(Intercooler::getAttrName(Intercooler::QP_TRIGGER), false);
+        $trigger = \Yii::$app->request->get(Intercooler::attr(Intercooler::QP_TRIGGER), false);
 
         return $id == $trigger;
     }
 
     /**
-     * Retrieves element id
+     * Retrieves infinite element html ID
      * @param string $id
      * @param string $suffix
+     * @param boolean $withHash
      * @return string
      */
-    public static function getElementId($id, $suffix, $hash = false)
+    public static function id($id, $suffix, $withHash = false)
     {
-        if ($hash) {
-            return sprintf('#%s-%s', $id, $suffix);
+        $id = sprintf('%s-%s', $id, $suffix);
+
+        if (!$withHash) {
+            return $id;
         }
 
-        return sprintf('%s-%s', $id, $suffix);
+        return sprintf('#%s', $id);
     }
 
 }

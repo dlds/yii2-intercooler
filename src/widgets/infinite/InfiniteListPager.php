@@ -125,8 +125,10 @@ class InfiniteListPager extends \yii\widgets\LinkPager
     public function initPager()
     {
         if (!isset($this->options['id'])) {
-            $this->options['id'] = self::generateId($this->id);
+            $this->options['id'] = static::id($this->id, self::KEY_PAGER);
         }
+
+        Html::addCssClass($this->options, self::KEY_PAGER);
 
         $this->_handler = new \dlds\intercooler\Intercooler($this->intercooler);
 
@@ -195,14 +197,17 @@ class InfiniteListPager extends \yii\widgets\LinkPager
     protected function getPageBtnOptions($page)
     {
         $additionals = [
-            Intercooler::getAttrName(self::ATTR_REPLACE_TARGET) => $this->replaceTarget ? "true" : "false",
+            Intercooler::attr(self::ATTR_REPLACE_TARGET) => $this->replaceTarget ? "true" : "false",
         ];
 
         if ($this->indicatorError) {
-            $additionals[Intercooler::getAttrName(Intercooler::ATTR_EVT_ON_ERROR)] = new \yii\web\JsExpression("var e = document.querySelector('#$this->indicatorErrorId'); if (typeof(e) != 'undefined' && e != null) {e.style.display = null;}");
-            $additionals[Intercooler::getAttrName(Intercooler::ATTR_EVT_ON_BEFORE_SEND)] = new \yii\web\JsExpression("var icf = document.querySelector('#$this->indicatorErrorId'); if (typeof(icf) != 'undefined' && icf != null) {icf.style.display = 'none';} var icl = document.querySelector('#$this->indicatorLoadingId'); if (typeof(icl) != 'undefined' && icl != null) {icl.style.display = null;}");
-            $additionals[Intercooler::getAttrName(Intercooler::ATTR_EVT_ON_COMPLETE)] = new \yii\web\JsExpression("var e = document.querySelector('#$this->indicatorLoadingId'); if (typeof(e) != 'undefined' && e != null) {e.style.display = 'none';}");
+            $additionals[Intercooler::attr(Intercooler::ATTR_EVT_ON_ERROR)] = new \yii\web\JsExpression("var e = document.querySelector('#$this->indicatorErrorId'); if (typeof(e) != 'undefined' && e != null) {e.style.display = null;}");
+            $additionals[Intercooler::attr(Intercooler::ATTR_EVT_ON_BEFORE_SEND)] = new \yii\web\JsExpression("var icf = document.querySelector('#$this->indicatorErrorId'); if (typeof(icf) != 'undefined' && icf != null) {icf.style.display = 'none';} var icl = document.querySelector('#$this->indicatorLoadingId'); if (typeof(icl) != 'undefined' && icl != null) {icl.style.display = null;}");
+            $additionals[Intercooler::attr(Intercooler::ATTR_EVT_ON_COMPLETE)] = new \yii\web\JsExpression("var e = document.querySelector('#$this->indicatorLoadingId'); if (typeof(e) != 'undefined' && e != null) {e.style.display = 'none';}");
         }
+
+        $js = new \yii\web\JsExpression("jQuery('#{$this->id}').on('success.ic', function(e) {console.log(e)})");
+        $this->getView()->registerJs($js);
 
         return ArrayHelper::merge($this->_handler->getOptions($this->getTriggerId(), $additionals), $this->linkOptions);
     }
@@ -213,7 +218,7 @@ class InfiniteListPager extends \yii\widgets\LinkPager
      */
     protected function getTriggerId()
     {
-        return self::getElementId($this->id, self::KEY_TRIGGER);
+        return static::id($this->id, self::KEY_TRIGGER);
     }
 
     /**
@@ -222,7 +227,7 @@ class InfiniteListPager extends \yii\widgets\LinkPager
      */
     protected function getIndicatorLoadingId()
     {
-        return self::getElementId($this->id, self::KEY_INDICATOR_LOADING);
+        return static::id($this->id, self::KEY_INDICATOR_LOADING);
     }
 
     /**
@@ -231,7 +236,7 @@ class InfiniteListPager extends \yii\widgets\LinkPager
      */
     protected function getIndicatorErrorId()
     {
-        return self::getElementId($this->id, self::KEY_INDICATOR_ERROR);
+        return static::id($this->id, self::KEY_INDICATOR_ERROR);
     }
 
     /**
@@ -241,8 +246,9 @@ class InfiniteListPager extends \yii\widgets\LinkPager
     protected function getIndicatorLoading()
     {
         return Html::tag('div', $this->indicatorLoading, [
-                    'id' => $this->getIndicatorLoadingId(),
-                    'style' => 'display: none'
+                'id' => $this->getIndicatorLoadingId(),
+                'class' => self::KEY_INDICATOR_LOADING,
+                'style' => 'display: none'
         ]);
     }
 
@@ -253,8 +259,9 @@ class InfiniteListPager extends \yii\widgets\LinkPager
     protected function getIndicatorError()
     {
         return Html::tag('div', $this->indicatorError, [
-                    'id' => $this->getIndicatorErrorId(),
-                    'style' => 'display: none'
+                'id' => $this->getIndicatorErrorId(),
+                'class' => self::KEY_INDICATOR_ERROR,
+                'style' => 'display: none'
         ]);
     }
 
@@ -287,24 +294,21 @@ class InfiniteListPager extends \yii\widgets\LinkPager
     }
 
     /**
-     * Generates pager id
-     * @param string $id
-     * @return string
-     */
-    public static function generateId($id)
-    {
-        return self::getElementId($id, self::KEY_PAGER);
-    }
-
-    /**
-     * Retrieves element id
+     * Retrieves infinite pager element html ID
      * @param string $id
      * @param string $suffix
+     * @param boolean $withHash
      * @return string
      */
-    public static function getElementId($id, $suffix)
+    public static function id($id, $suffix, $withHash = false)
     {
-        return sprintf('%s-%s', $id, $suffix);
+        $id = sprintf('%s-%s', $id, $suffix);
+
+        if (!$withHash) {
+            return $id;
+        }
+
+        return sprintf('#%s', $id);
     }
 
 }
