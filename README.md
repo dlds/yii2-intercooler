@@ -66,11 +66,12 @@ Helper which renders appropriate html element with required intercooler attribut
 ```
 AjaxBlock::begin([
 	'id' => 'my-ic-widget',
-    'intercooler' => [
-        'url' => '/my-custom-url',
-        'target' => '#my-target-element',
-        'wrapper' => 'button',
-        'options' => ['class' => 'text-gray']
+	'wrapper' => 'button',
+	'options' => ['class' => 'text-gray']
+	'intercooler' => [
+		'url' => '/my-custom-url',
+		'target' => '#my-target-element',
+	],
 ]);
 
 // ... custom content
