@@ -9,7 +9,7 @@
 
 namespace dlds\intercooler;
 
-use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -242,6 +242,10 @@ class Intercooler extends \yii\base\Object
      */
     public static function doRedirect($url)
     {
+        if (is_array($url)) {
+            $url = Url::to($url);
+        }
+
         $headers = ($response = \Yii::$app->getResponse()) ? $response->headers : false;
 
         if ($headers) {
