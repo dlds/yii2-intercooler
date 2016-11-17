@@ -46,6 +46,8 @@ class Intercooler extends \yii\base\Object
     const XH_OPEN = 'X-IC-Open';
     const XH_PUSH_URL = 'X-IC-PushURL';
     const XH_REMOVE = 'X-IC-Remove';
+    const XH_SLV = 'X-IC-Set-Local-Vars';
+    
 
     /**
      * Prefix
@@ -276,6 +278,19 @@ class Intercooler extends \yii\base\Object
 
         if ($headers) {
             $headers->add(self::XH_REMOVE, $value);
+        }
+    }
+
+    /**
+     * Sets local vars headers
+     * @param array $vars
+     */
+    public static function setLocalVars(array $vars = [])
+    {
+        $headers = ($response = \Yii::$app->getResponse()) ? $response->headers : false;
+
+        if ($headers) {
+            $headers->add(self::XH_SLV, \yii\helpers\Json::encode($vars));
         }
     }
 
