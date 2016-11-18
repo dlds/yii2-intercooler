@@ -47,7 +47,6 @@ class Intercooler extends \yii\base\Object
     const XH_PUSH_URL = 'X-IC-PushURL';
     const XH_REMOVE = 'X-IC-Remove';
     const XH_SLV = 'X-IC-Set-Local-Vars';
-    
 
     /**
      * Prefix
@@ -248,11 +247,7 @@ class Intercooler extends \yii\base\Object
             $url = Url::to($url);
         }
 
-        $headers = ($response = \Yii::$app->getResponse()) ? $response->headers : false;
-
-        if ($headers) {
-            $headers->add(self::XH_REDIRECT, $url);
-        }
+        static::addHeaders(self::XH_REDIRECT, $url);
     }
 
     /**
@@ -261,24 +256,16 @@ class Intercooler extends \yii\base\Object
      */
     public static function doRefresh(array $paths = [])
     {
-        $headers = ($response = \Yii::$app->getResponse()) ? $response->headers : false;
-
-        if ($headers) {
-            $headers->add(self::XH_REFRESH, implode(',', $paths));
-        }
+        static::addHeaders(self::XH_REFRESH, implode(',', $paths));
     }
 
     /**
      * Sets remove headers
-     * @param boolean $value
+     * @param mixed $value
      */
     public static function doRemove($value = true)
     {
-        $headers = ($response = \Yii::$app->getResponse()) ? $response->headers : false;
-
-        if ($headers) {
-            $headers->add(self::XH_REMOVE, $value);
-        }
+        static::addHeaders(self::XH_REMOVE, $value);
     }
 
     /**
@@ -287,10 +274,20 @@ class Intercooler extends \yii\base\Object
      */
     public static function setLocalVars(array $vars = [])
     {
+        static::addHeaders(self::XH_SLV, \yii\helpers\Json::encode($vars));
+    }
+
+    /**
+     * Adds new headers to current response
+     * @param string $key
+     * @param mixed $value
+     */
+    protected static function addHeaders($key, $value)
+    {
         $headers = ($response = \Yii::$app->getResponse()) ? $response->headers : false;
 
         if ($headers) {
-            $headers->add(self::XH_SLV, \yii\helpers\Json::encode($vars));
+            $headers->add($key, $value);
         }
     }
 
