@@ -67,6 +67,11 @@ class InfiniteListPager extends \yii\widgets\LinkPager
     public $indicatorLoading;
 
     /**
+     * @var string loading indicator options
+     */
+    public $indicatorLoadingOptions;
+
+    /**
      * @var string empty indicator
      */
     public $indicatorEmpty;
@@ -178,11 +183,13 @@ class InfiniteListPager extends \yii\widgets\LinkPager
         $options = $this->getPageBtnOptions($page);
 
         if (!$disabled) {
-            $html = $this->getIndicatorLoading();
+            $html = $this->getIndicatorError();
 
-            $html .= $this->getIndicatorError();
+            $content = $this->getIndicatorLoading();
 
-            $html .= Html::button($label, $options);
+            $content .= $label;
+
+            $html .= Html::button($content, $options);
 
             return $html;
         }
@@ -245,11 +252,19 @@ class InfiniteListPager extends \yii\widgets\LinkPager
      */
     protected function getIndicatorLoading()
     {
-        return Html::tag('div', $this->indicatorLoading, [
-                'id' => $this->getIndicatorLoadingId(),
-                'class' => self::KEY_INDICATOR_LOADING,
-                'style' => 'display: none'
-        ]);
+        $class = ArrayHelper::remove($this->indicatorLoadingOptions, 'class');
+
+        $options = [
+            'id' => $this->getIndicatorLoadingId(),
+            'class' => self::KEY_INDICATOR_LOADING,
+            'style' => 'display: none'
+        ];
+
+        if ($class) {
+            Html::addCssClass($options, $class);
+        }
+
+        return Html::tag('div', $this->indicatorLoading, ArrayHelper::merge($options, $this->indicatorLoadingOptions));
     }
 
     /**
