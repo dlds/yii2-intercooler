@@ -97,6 +97,11 @@ class InfiniteListPager extends \yii\widgets\LinkPager
     public $intercooler = [];
 
     /**
+     * @var array|null pagination route
+     */
+    public $route = null;
+
+    /**
      * @var \dlds\intercooler\Intercooler instance
      */
     protected $_handler;
@@ -135,9 +140,13 @@ class InfiniteListPager extends \yii\widgets\LinkPager
 
         Html::addCssClass($this->options, self::KEY_PAGER);
 
-        $this->_handler = new \dlds\intercooler\Intercooler($this->intercooler);
+        if ($this->route) {
+            $this->pagination->route = ArrayHelper::getValue($this->route, 0);
+        }
 
+        $this->_handler = new \dlds\intercooler\Intercooler($this->intercooler);
         $this->_handler->url = $this->pagination->createUrl($this->getNextPage());
+
         $this->_handler->include = \yii\helpers\Json::encode([self::QP_PARTIAL_OUTPUT => 1]);
 
         if (self::B_ON_CLICK === $this->behavior) {
