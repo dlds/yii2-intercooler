@@ -88,11 +88,6 @@ class InfiniteList extends \yii\widgets\ListView
      */
     public function run()
     {
-        // print empty list when there is no data to show
-        if (!$this->dataProvider->getCount() && !$this->showOnEmpty) {
-            return $this->listEmpty();
-        }
-
         // use parent rendering when it is first (not partial) request
         if (!static::isPartial($this->id)) {
             return parent::run();
@@ -118,19 +113,6 @@ class InfiniteList extends \yii\widgets\ListView
 
             return $content === false ? $matches[0] : $content;
         }, $this->detectLayout($this->id));
-    }
-
-    /**
-     * Prints empty list
-     * ---
-     * Reders empty notice with list refresh indicator
-     * ---
-     * @return string
-     */
-    public function listEmpty()
-    {
-        echo $this->renderIndicatorRefresh();
-        echo $this->renderEmpty();
     }
 
     /**
@@ -168,13 +150,17 @@ class InfiniteList extends \yii\widgets\ListView
         $empty = ArrayHelper::getValue($this->pager, 'indicatorEmpty');
 
         if (!$empty) {
-            return parent::renderEmpty();
+            $empty = parent::renderEmpty();
         }
 
-        return Html::tag('div', $empty, [
+        $html = Html::tag('div', $empty, [
                 'id' => $this->getIndicatorEmptyId(),
                 'class' => self::KEY_INDICATOR_EMPTY,
         ]);
+
+        $html .= $this->renderIndicatorRefresh();
+
+        return $html;
     }
 
     /**
