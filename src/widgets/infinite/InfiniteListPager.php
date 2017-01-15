@@ -69,7 +69,7 @@ class InfiniteListPager extends \yii\widgets\LinkPager
     /**
      * @var string loading indicator options
      */
-    public $indicatorLoadingOptions;
+    public $indicatorLoadingOptions = [];
 
     /**
      * @var string empty indicator
