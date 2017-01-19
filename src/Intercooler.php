@@ -234,8 +234,8 @@ class Intercooler extends \yii\base\Object
         ];
 
         foreach ($this->getAttrBound() as $param => $attr) {
-            if (isset($this->$param) && $this->$param) {
-                $options[static::attr($attr)] = $this->$param;
+            if (isset($this->$param)) {
+                $options[static::attr($attr)] = (string) $this->$param;
             }
         }
 
@@ -263,6 +263,11 @@ class Intercooler extends \yii\base\Object
             'include' => self::ATTR_INCLUDE,
             'indicator' => self::ATTR_INDICATOR,
             'depends' => self::ATTR_DEPENDS,
+            'onBeforeSend' => self::ATTR_EVT_ON_BEFORE_SEND,
+            'onBeforeTrigger' => self::ATTR_EVT_ON_BEFORE_TRIGGER,
+            'onComplete' => self::ATTR_EVT_ON_COMPLETE,
+            'onError' => self::ATTR_EVT_ON_ERROR,
+            'onSuccess' => self::ATTR_EVT_ON_SUCCESS,
         ];
     }
 
