@@ -17,7 +17,7 @@
     ],
     "require": {
         "yiisoft/yii2": "~2.0.0",
-        "bower-asset/intercooler-js": "~0.9.4"
+        "bower-asset/intercooler-js": "~1.0.0"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",
