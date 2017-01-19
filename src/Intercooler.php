@@ -34,19 +34,20 @@ class Intercooler extends \yii\base\Object
     /**
      * X Headers
      */
-    const XH_REQUEST = 'X-IC-Request';
-    const XH_HTTP_METHOD_OVERRIDE = 'X-HTTP-Method-Override';
-    const XH_TRIEGGER = 'X-IC-Trigger';
-    const XH_REFRESH = 'X-IC-Refresh';
-    const XH_REDIRECT = 'X-IC-Redirect';
-    const XH_SCRIPT = 'X-IC-Script';
     const XH_CANCEL_POLLING = 'X-IC-CancelPolling';
-    const XH_RESUME_POLLING = 'X-IC-ResumePolling';
-    const XH_SET_POLL_INTERVAL = 'X-IC-SetPollInterval';
+    const XH_HTTP_METHOD_OVERRIDE = 'X-HTTP-Method-Override';
     const XH_OPEN = 'X-IC-Open';
     const XH_PUSH_URL = 'X-IC-PushURL';
+    const XH_REDIRECT = 'X-IC-Redirect';
+    const XH_REFRESH = 'X-IC-Refresh';
     const XH_REMOVE = 'X-IC-Remove';
-    const XH_SLV = 'X-IC-Set-Local-Vars';
+    const XH_REQUEST = 'X-IC-Request';
+    const XH_RESUME_POLLING = 'X-IC-ResumePolling';
+    const XH_SCRIPT = 'X-IC-Script';
+    const XH_SET_LOCAL_VARS = 'X-IC-Set-Local-Vars';
+    const XH_SET_POLL_INTERVAL = 'X-IC-SetPollInterval';
+    const XH_TITLE = 'X-IC-TITLE';
+    const XH_TRIGGER = 'X-IC-Trigger';
 
     /**
      * Prefix
@@ -80,8 +81,8 @@ class Intercooler extends \yii\base\Object
     /**
      * Intercooler attributes
      */
-    const ATTR_ACTION = 'action';
     const ATTR_ADD_CLASS = 'add-class';
+    const ATTR_ATR_SRC = 'attr-src';
     const ATTR_CONFIRM = 'confirm';
     const ATTR_DEPENDS = 'deps';
     const ATTR_INDICATOR = 'indicator';
@@ -93,32 +94,40 @@ class Intercooler extends \yii\base\Object
     const ATTR_PUSH_URL = 'push-url';
     const ATTR_SELECT_FROM_RESPONSE = 'select-from-response';
     const ATTR_STYLE_SRC = 'style-src';
+    const ATTR_SWAP_STYLE = 'swap-style';
     const ATTR_TRANSITION_DURATION = 'transition-duration';
     const ATTR_VERB = 'verb';
-    // includes
-    const ATTR_GLOBAL_INCLUDE = 'global-include';
-    const ATTR_INCLUDE = 'include';
-    // poll
-    const ATTR_PAUSE_POLLING = 'pause-polling';
-    const ATTR_POLL = 'poll';
-    const ATTR_POLL_REPEATS = 'poll-repeats';
-    // remove | replace
-    const ATTR_REMOVE_AFTER = 'remove-after';
-    const ATTR_REMOVE_CLASS = 'remove-class';
-    const ATTR_REPLACE_TARGET = 'replace-target';
-    // scroll
-    const ATTR_SCROLL_OFFSET = 'scroll-offset';
-    const ATTR_SCROLL_TO_TARGET = 'scroll-to-target';
-    // triggers & targets
-    const ATTR_TRIGGER_ON = 'trigger-on';
-    const ATTR_TRIGGER_DELAY = 'trigger-delay';
-    const ATTR_TARGET = 'target';
-    // events
+    // element action
+    const ATTR_ACTION = 'action';
+    const ATTR_ACTION_TARGET = 'action-target';
+    // request events
     const ATTR_EVT_ON_BEFORE_SEND = 'on-beforeSend';
     const ATTR_EVT_ON_BEFORE_TRIGGER = 'on-beforeTrigger';
     const ATTR_EVT_ON_COMPLETE = 'on-complete';
     const ATTR_EVT_ON_ERROR = 'on-error';
     const ATTR_EVT_ON_SUCCESS = 'on-success';
+    // request includes
+    const ATTR_INCLUDE = 'include';
+    const ATTR_GLOBAL_INCLUDE = 'global-include';
+    // poll
+    const ATTR_PAUSE_POLLING = 'pause-polling';
+    const ATTR_POLL = 'poll';
+    const ATTR_POLL_REPEATS = 'poll-repeats';
+    // element remove / replace
+    const ATTR_REMOVE_AFTER = 'remove-after';
+    const ATTR_REMOVE_CLASS = 'remove-class';
+    const ATTR_REPLACE_TARGET = 'replace-target';
+    // server side events
+    const ATTR_SSE_SRC = 'sse-src';
+    // scroll
+    const ATTR_SCROLL_OFFSET = 'scroll-offset';
+    const ATTR_SCROLL_TO_TARGET = 'scroll-to-target';
+    // targets
+    const ATTR_TARGET = 'target';
+    // triggers
+    const ATTR_TRIGGER_FROM = 'trigger-from';
+    const ATTR_TRIGGER_ON = 'trigger-on';
+    const ATTR_TRIGGER_DELAY = 'trigger-delay';
 
     /**
      * @var mixed destination url as string or destination route as array
@@ -168,6 +177,36 @@ class Intercooler extends \yii\base\Object
      * @see http://intercoolerjs.org/docs.html#dependencies
      */
     public $depends;
+    
+    /**
+     * @var \yii\web\JsExpression processed before request is sent
+     * @see http://intercoolerjs.org/attributes/ic-on-beforeSend.html
+     */
+    public $onBeforeSend;
+
+    /**
+     * @var \yii\web\JsExpression processed before event is triggered
+     * @see http://intercoolerjs.org/attributes/ic-on-beforeTrigger.html
+     */
+    public $onBeforeTrigger;
+    
+    /**
+     * @var \yii\web\JsExpression processed after response is received
+     * @see http://intercoolerjs.org/attributes/ic-on-complete.html
+     */
+    public $onComplete;
+    
+    /**
+     * @var \yii\web\JsExpression processed when error occured
+     * @see http://intercoolerjs.org/attributes/ic-on-error.html
+     */
+    public $onError;
+    
+    /**
+     * @var \yii\web\JsExpression processed after success response is received
+     * @see http://intercoolerjs.org/attributes/ic-on-success.html
+     */
+    public $onSuccess;
 
     /**
      * @inheritdoc
@@ -274,7 +313,7 @@ class Intercooler extends \yii\base\Object
      */
     public static function setLocalVars(array $vars = [])
     {
-        static::addHeaders(self::XH_SLV, \yii\helpers\Json::encode($vars));
+        static::addHeaders(self::XH_SET_LOCAL_VARS, \yii\helpers\Json::encode($vars));
     }
 
     /**
