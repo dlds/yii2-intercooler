@@ -160,6 +160,12 @@ class Intercooler extends \yii\base\Object
     public $target;
 
     /**
+     * @var string indicates if target should be replaced
+     * @see http://intercoolerjs.org/attributes/ic-replace-target.html
+     */
+    public $replace;
+
+    /**
      * @var string element selector which will be serialized and included into request
      * @see http://intercoolerjs.org/docs.html#inputs
      */
@@ -177,7 +183,7 @@ class Intercooler extends \yii\base\Object
      * @see http://intercoolerjs.org/docs.html#dependencies
      */
     public $depends;
-    
+
     /**
      * @var \yii\web\JsExpression processed before request is sent
      * @see http://intercoolerjs.org/attributes/ic-on-beforeSend.html
@@ -189,19 +195,19 @@ class Intercooler extends \yii\base\Object
      * @see http://intercoolerjs.org/attributes/ic-on-beforeTrigger.html
      */
     public $onBeforeTrigger;
-    
+
     /**
      * @var \yii\web\JsExpression processed after response is received
      * @see http://intercoolerjs.org/attributes/ic-on-complete.html
      */
     public $onComplete;
-    
+
     /**
      * @var \yii\web\JsExpression processed when error occured
      * @see http://intercoolerjs.org/attributes/ic-on-error.html
      */
     public $onError;
-    
+
     /**
      * @var \yii\web\JsExpression processed after success response is received
      * @see http://intercoolerjs.org/attributes/ic-on-success.html
@@ -260,6 +266,7 @@ class Intercooler extends \yii\base\Object
             'when' => self::ATTR_TRIGGER_ON,
             'delay' => self::ATTR_TRIGGER_DELAY,
             'target' => self::ATTR_TARGET,
+            'replace' => self::ATTR_REPLACE_TARGET,
             'include' => self::ATTR_INCLUDE,
             'indicator' => self::ATTR_INDICATOR,
             'depends' => self::ATTR_DEPENDS,
