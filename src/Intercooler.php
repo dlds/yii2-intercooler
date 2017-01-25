@@ -142,28 +142,16 @@ class Intercooler extends \yii\base\Object
     public $type = self::RQ_TYPE_GET;
 
     /**
-     * @var string event trigger, if equals false event will be autodetected
-     * @see http://intercoolerjs.org/docs.html#triggers
-     */
-    public $when;
-
-    /**
      * @var int delay till event is triggered
      * @see http://intercoolerjs.org/docs.html#triggers
      */
     public $delay;
 
     /**
-     * @var string target element selector where responded content will be placed
-     * @see http://intercoolerjs.org/docs.html#targeting
+     * @var array depending urls or routes
+     * @see http://intercoolerjs.org/docs.html#dependencies
      */
-    public $target;
-
-    /**
-     * @var string indicates if target should be replaced
-     * @see http://intercoolerjs.org/attributes/ic-replace-target.html
-     */
-    public $replace;
+    public $depends;
 
     /**
      * @var string element selector which will be serialized and included into request
@@ -179,10 +167,28 @@ class Intercooler extends \yii\base\Object
     public $indicator;
 
     /**
-     * @var array depending urls or routes
-     * @see http://intercoolerjs.org/docs.html#dependencies
+     * @var string|boolean pushes the location of the ajax request
+     * @see http://intercoolerjs.org/attributes/ic-push-url.html
      */
-    public $depends;
+    public $push = false;
+
+    /**
+     * @var string indicates if target should be replaced
+     * @see http://intercoolerjs.org/attributes/ic-replace-target.html
+     */
+    public $replace;
+
+    /**
+     * @var string target element selector where responded content will be placed
+     * @see http://intercoolerjs.org/docs.html#targeting
+     */
+    public $target;
+
+    /**
+     * @var string event trigger, if equals false event will be autodetected
+     * @see http://intercoolerjs.org/docs.html#triggers
+     */
+    public $when;
 
     /**
      * @var \yii\web\JsExpression processed before request is sent
@@ -240,8 +246,9 @@ class Intercooler extends \yii\base\Object
         ];
 
         foreach ($this->getAttrBound() as $param => $attr) {
+
             if (isset($this->$param)) {
-                $options[static::attr($attr)] = (string) $this->$param;
+                $options[static::attr($attr)] = static::valParam($this->$param);
             }
         }
 
@@ -263,13 +270,14 @@ class Intercooler extends \yii\base\Object
     protected function getAttrBound()
     {
         return [
-            'when' => self::ATTR_TRIGGER_ON,
             'delay' => self::ATTR_TRIGGER_DELAY,
-            'target' => self::ATTR_TARGET,
-            'replace' => self::ATTR_REPLACE_TARGET,
+            'depends' => self::ATTR_DEPENDS,
             'include' => self::ATTR_INCLUDE,
             'indicator' => self::ATTR_INDICATOR,
-            'depends' => self::ATTR_DEPENDS,
+            'push' => self::ATTR_PUSH_URL,
+            'replace' => self::ATTR_REPLACE_TARGET,
+            'target' => self::ATTR_TARGET,
+            'when' => self::ATTR_TRIGGER_ON,
             'onBeforeSend' => self::ATTR_EVT_ON_BEFORE_SEND,
             'onBeforeTrigger' => self::ATTR_EVT_ON_BEFORE_TRIGGER,
             'onComplete' => self::ATTR_EVT_ON_COMPLETE,
@@ -320,6 +328,19 @@ class Intercooler extends \yii\base\Object
     }
 
     /**
+     * Sets remove headers
+     * @param mixed $value
+     */
+    public static function doPush($url)
+    {
+        if (is_array($url)) {
+            $url = Url::to($url);
+        }
+
+        static::addHeaders(self::XH_PUSH_URL, $url);
+    }
+
+    /**
      * Sets local vars headers
      * @param array $vars
      */
@@ -340,6 +361,24 @@ class Intercooler extends \yii\base\Object
         if ($headers) {
             $headers->add($key, $value);
         }
+    }
+
+    /**
+     * Parses param value
+     * @param mixed $value
+     * @return string
+     */
+    private static function valParam($value)
+    {
+        if (true === $value) {
+            return 'true';
+        }
+
+        if (false === $value) {
+            return 'false';
+        }
+
+        return (string) $value;
     }
 
 }
