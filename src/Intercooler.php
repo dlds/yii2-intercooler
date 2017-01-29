@@ -142,6 +142,12 @@ class Intercooler extends \yii\base\Object
     public $type = self::RQ_TYPE_GET;
 
     /**
+     * @var string dialog confirm message
+     * @see http://intercoolerjs.org/attributes/ic-confirm.html
+     */
+    public $confirm;
+
+    /**
      * @var int delay till event is triggered
      * @see http://intercoolerjs.org/docs.html#triggers
      */
@@ -270,6 +276,7 @@ class Intercooler extends \yii\base\Object
     protected function getAttrBound()
     {
         return [
+            'confirm' => self::ATTR_CONFIRM,
             'delay' => self::ATTR_TRIGGER_DELAY,
             'depends' => self::ATTR_DEPENDS,
             'include' => self::ATTR_INCLUDE,
