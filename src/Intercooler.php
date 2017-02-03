@@ -164,7 +164,7 @@ class Intercooler extends \yii\base\Object
      * @var boolean caches node to intercooler memory
      * @see http://intercoolerjs.org/examples/history_tab1.html
      */
-    public $history = null;
+    public $history;
 
     /**
      * @var string element selector which will be serialized and included into request
