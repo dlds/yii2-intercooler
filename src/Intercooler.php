@@ -85,6 +85,7 @@ class Intercooler extends \yii\base\Object
     const ATTR_ATR_SRC = 'attr-src';
     const ATTR_CONFIRM = 'confirm';
     const ATTR_DEPENDS = 'deps';
+    const ATTR_HISTORY = 'history-elt';
     const ATTR_INDICATOR = 'indicator';
     const ATTR_LIMIT_CHILDREN = 'limit-children';
     const ATTR_LOCAL_VARS = 'local-vars';
@@ -160,6 +161,12 @@ class Intercooler extends \yii\base\Object
     public $depends;
 
     /**
+     * @var boolean caches node to intercooler memory
+     * @see http://intercoolerjs.org/examples/history_tab1.html
+     */
+    public $history = null;
+
+    /**
      * @var string element selector which will be serialized and included into request
      * @see http://intercoolerjs.org/docs.html#inputs
      */
@@ -176,7 +183,7 @@ class Intercooler extends \yii\base\Object
      * @var string|boolean pushes the location of the ajax request
      * @see http://intercoolerjs.org/attributes/ic-push-url.html
      */
-    public $push = false;
+    public $push = null;
 
     /**
      * @var string indicates if target should be replaced
@@ -279,6 +286,7 @@ class Intercooler extends \yii\base\Object
             'confirm' => self::ATTR_CONFIRM,
             'delay' => self::ATTR_TRIGGER_DELAY,
             'depends' => self::ATTR_DEPENDS,
+            'history' => self::ATTR_HISTORY,
             'include' => self::ATTR_INCLUDE,
             'indicator' => self::ATTR_INDICATOR,
             'push' => self::ATTR_PUSH_URL,
@@ -335,7 +343,7 @@ class Intercooler extends \yii\base\Object
     }
 
     /**
-     * Sets remove headers
+     * Pushes new url
      * @param mixed $value
      */
     public static function doPush($url)
@@ -346,6 +354,15 @@ class Intercooler extends \yii\base\Object
 
         static::addHeaders(self::XH_PUSH_URL, $url);
     }
+    
+    /**
+     * Pushes new title
+     * @param mixed $title
+     */
+    public static function doPushTitle($title)
+    {
+        static::addHeaders(self::XH_TITLE, $title);
+    }
 
     /**
      * Sets local vars headers
@@ -355,7 +372,7 @@ class Intercooler extends \yii\base\Object
     {
         static::addHeaders(self::XH_SET_LOCAL_VARS, \yii\helpers\Json::encode($vars));
     }
-
+    
     /**
      * Adds new headers to current response
      * @param string $key
