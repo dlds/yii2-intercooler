@@ -365,6 +365,17 @@ class Intercooler extends \yii\base\Object
     }
 
     /**
+     * Indicates if request is IC request
+     * @param array $vars
+     */
+    public static function isIcRequest()
+    {
+        $headers = static::getHeaders();
+
+        return $headers->has(self::XH_REQUEST);
+    }
+
+    /**
      * Sets local vars headers
      * @param array $vars
      */
@@ -372,7 +383,16 @@ class Intercooler extends \yii\base\Object
     {
         static::addHeaders(self::XH_SET_LOCAL_VARS, \yii\helpers\Json::encode($vars));
     }
-    
+
+    /**
+     * Retrieves request headers
+     * @return HeaderCollection
+     */
+    protected static function getHeaders()
+    {
+        return \Yii::$app->request->headers;
+    }
+
     /**
      * Adds new headers to current response
      * @param string $key
