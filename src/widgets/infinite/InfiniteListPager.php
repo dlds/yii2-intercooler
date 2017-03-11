@@ -222,9 +222,6 @@ class InfiniteListPager extends \yii\widgets\LinkPager
             $additionals[Intercooler::attr(Intercooler::ATTR_EVT_ON_COMPLETE)] = new \yii\web\JsExpression("var e = document.querySelector('#$this->indicatorLoadingId'); if (typeof(e) != 'undefined' && e != null) {e.style.display = 'none';}");
         }
 
-        $js = new \yii\web\JsExpression("jQuery('#{$this->id}').on('success.ic', function(e) {console.log(e)})");
-        $this->getView()->registerJs($js);
-
         return ArrayHelper::merge($this->_handler->getOptions($this->getTriggerId(), $additionals), $this->linkOptions);
     }
 
