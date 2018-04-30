@@ -3,7 +3,7 @@
     "description": "Yii2 Intercooler extensions",
     "keywords": ["yii2", "intercooler"],
     "type": "yii2-extension",
-    "license": "BSD",
+    "license": "MIT",
     "support": {
         "issues": "https://github.com/dlds/yii2-intercooler/issues",
         "wiki": "https://github.com/dlds/yii2-intercooler/wiki",
